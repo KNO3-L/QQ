@@ -1,0 +1,58 @@
+.dialogFace {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    background: #000000;
+}
+
+/* 弹窗样式 */
+.bg {
+    width: 500px;
+    height: 400px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.2);
+    /* 定位 居中 */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -200px;
+    margin-left: -250px;
+    /* 显示级别 */
+    z-index: 11;
+}
+
+/* 弹窗标题 */
+.title {
+    color: #000000;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    cursor: move;
+    /*光标的样式*/
+    padding: 0;
+    font-size: 22px;
+}
+
+/* 弹窗上的关闭元素样式 */
+.close {
+    position: absolute;
+    right: 6px;
+    top: -10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#dialogContentBox {
+    height: 300px;
+    overflow: auto;
+    padding: 10px;
+}
+
+#dialogContentBox>ul {
+    margin: 10px;
+}

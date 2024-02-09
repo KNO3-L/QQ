@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QQ</title>
+    <link rel="stylesheet" href="../style/receiveMessagePage.css">
+    <link rel="stylesheet" href="../style/draggableBox.css">
+    <link rel="stylesheet" href="../style/popup.css">
+</head>
+
+<body>
+    <div id="draggableBox">
+        <div id="titleBox">Handoff</div>
+        <div id="enterMessageBox">
+            <div id="emptyBox"></div>
+            <div id="chooseBox">
+                <span id="handoffModeBox">[Group]</span>
+                <span id="chooseTargetBox">TapToChoose</span>
+            </div>
+            <textarea id="messageContentBox" name="" cols="30" rows="10"></textarea>
+        </div>
+        <div id="sendBox">Send</div>
+    </div>
+    <div id="window">
+        <div id="messageList">
+
+        </div>
+    </div>
+
+    <div id="popup" style="display: none;">
+        <!-- 弹窗遮蔽层 -->
+        <div class="dialogFace">
+
+        </div>
+        <!-- 弹窗内容层 -->
+        <div class="bg">
+
+            <div class="title">Choose Target
+                <div class="close" onclick="closePopup()">&times;</div>
+            </div>
+            <div id="dialogContentBox">
+
+            </div>
+        </div>
+    </div>
+    <script src="../script/popup.js"></script>
+    <script src="../script/draggableBox.js"></script>
+    <script src="../script/receiveMessagePage.js"></script>
+</body>
+
+
+</html>
