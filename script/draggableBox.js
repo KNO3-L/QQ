@@ -36,13 +36,13 @@ sendBox.onclick = () => {
             "group_id": chooseTargetBox.ID,
             "raw_message": messageContentBox.value,
             "time": (new Date()).valueOf(),
-            "user_id": self.user_id
+            "user_id": config.user_id
         }, to = chooseTargetBox.ID)
     } else {
         createPrivateItem({
             "raw_message": messageContentBox.value,
             "time": (new Date()).valueOf(),
-            "user_id": self.user_id
+            "user_id": config.user_id
         }, to = chooseTargetBox.ID)
     }
     socket.send(JSON.stringify(data))

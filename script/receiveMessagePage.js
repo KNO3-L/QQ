@@ -1,6 +1,10 @@
-var self = {
-    "user_id": undefined,
+var config = {
+    "user_id": 2054067921,
+    "autoReconnect": true,
+    "reconnectInterval": 5000,
 }
+
+var socket
 
 function CQCodeParse(text) {
     CQObjs = []
@@ -86,17 +90,6 @@ function fileObjParse(file) {
     return HTMLText
 }
 
-function sendMsg(ws, gid, msg) {
-
-    ws.send(JSON.stringify(data))
-}
-
-function groupList(ws) {
-    data = {
-
-    }
-}
-
 function createPrivateItem(data) {
     let { user_id, raw_message, time } = data
     // 创建根元素  
@@ -180,58 +173,66 @@ function createGroupItem(data, to = null) {
     document.getElementById("messageList").appendChild(root);
 }
 
-// 创建一个新的WebSocket对象  
-var socket = new WebSocket("ws://127.0.0.1:8080");
+function createSocket() {
+    // 创建一个新的WebSocket对象  
+    socket = new WebSocket("ws://127.0.0.1:8080");
 
-// 监听open事件，当连接打开时触发  
-socket.onopen = function (event) {
-    console.log("WebSocket连接已打开！");
-};
+    // 监听open事件，当连接打开时触发  
+    socket.onopen = function (event) {
+        console.log("WebSocket连接已打开！");
+    };
 
-// 监听message事件，当收到服务器消息时触发  
-socket.onmessage = function (event) {
-    console.log("从服务器收到消息:", JSON.parse(event.data));
-    data = JSON.parse(event.data)
-    if (data.post_type === "notice") {
-        data.notice_type === "group_upload" ? createGroupItem(data) : data.notice_type === "offline_file" ? createPrivateItem(data) : 0
-        return 0
-    } else if (data.data instanceof Array) {
-        data.data.map((v) => {
-            ul = document.createElement("ul")
-            ul.innerHTML = v.group_name || v.nickname
-            ul.ID = v.group_id || v.user_id
-            ul.onclick = (e) => {
-                chooseTargetBox.innerHTML = e.target.outerText
-                chooseTargetBox.ID = e.target.ID
-                closePopup()
-                sendMode = handoffModeBox.mode
-            }
-            dialogContentBox.appendChild(ul)
-        })
-        return 0
-    }
+    // 监听message事件，当收到服务器消息时触发  
+    socket.onmessage = function (event) {
+        // console.log("从服务器收到消息:", JSON.parse(event.data));
+        data = JSON.parse(event.data)
+        if (data.post_type === "notice") {
+            data.notice_type === "group_upload" ? createGroupItem(data) : data.notice_type === "offline_file" ? createPrivateItem(data) : 0
+            return 0
+        } else if (data.data instanceof Array) {
+            data.data.map((v) => {
+                ul = document.createElement("ul")
+                ul.innerHTML = v.group_name || v.nickname
+                ul.ID = v.group_id || v.user_id
+                ul.onclick = (e) => {
+                    chooseTargetBox.innerHTML = e.target.outerText
+                    chooseTargetBox.ID = e.target.ID
+                    closePopup()
+                    sendMode = handoffModeBox.mode
+                }
+                dialogContentBox.appendChild(ul)
+            })
+            return 0
+        }
 
-    switch (data.message_type) {
-        case "group":
-            createGroupItem(data)
-            break;
-        case "private":
-            createPrivateItem(data)
-            break;
-        default:
-            return 0;
-    }
+        switch (data.message_type) {
+            case "group":
+                createGroupItem(data)
+                break;
+            case "private":
+                createPrivateItem(data)
+                break;
+            default:
+                return 0;
+        }
 
-};
+    };
 
-// 监听close事件，当连接关闭时触发  
-socket.onclose = function (event) {
-    console.log("WebSocket连接已关闭！");
-};
+    // 监听close事件，当连接关闭时触发  
+    socket.onclose = function () {
+        console.log("WebSocket连接已关闭！");
 
-// 监听error事件，当发生错误时触发  
-socket.onerror = function (error) {
-    console.error("WebSocket错误:", error);
-};
+        if (config.autoReconnect) {
+            setTimeout(() => {
+                createSocket()
+            }, config.reconnectInterval);
+        }
+    };
 
+    // 监听error事件，当发生错误时触发  
+    socket.onerror = function (error) {
+        console.error("WebSocket错误:", error);
+    };
+}
 
+createSocket()
