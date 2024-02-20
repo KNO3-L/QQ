@@ -1,5 +1,5 @@
 var config = {
-    "user_id": 2054067921,
+    "user_id": 959316785,
     "autoReconnect": true,
     "reconnectInterval": 5000,
 }
@@ -7,29 +7,49 @@ var config = {
 var socket
 
 function CQCodeParse(text) {
+    var text
     CQObjs = []
     CQRe = /\[CQ\:.+?\]/g
-    CQTypeRe = /\[CQ\:(.+?)\,/
+    CQTypeRe = /\[CQ\:(.+?)[\,\]]/
     CQAttributeRe = /\,(.*?)\=(.*?)[\,\]]/g
     CQTexts = findAllMatches(text, CQRe)
     CQTexts.map(v => {
-        CQType = v.match(CQTypeRe)[1]
-        CQAttributesKey = findAllMatches(text, CQAttributeRe, 1)
-        CQAttributesValue = findAllMatches(text, CQAttributeRe, 2)
+        key = ""
+        value = ""
+        mode = false
+        CQObj = {}
+        for (i of v) {
+            if (i === "[") {
+                continue
+            }
+            else if ([",", "]"].indexOf(i) != -1) {
+                CQObj[key] = value
+                key = ""
+                value = ""
+                mode = !mode
+            }
+            else if ((i === "=" && value === "") || (key === "CQ" && i === ":")) {
+                mode = !mode
+            }
+            else if (mode) {
+                value += i
+            }
+            else {
+                key += i
+            }
+        }
 
-        CQObj = { CQType, v }
-        CQAttributesKey.map((v, i) => {
-            CQObj[v] = CQAttributesValue[i]
-        })
-
+        CQObj.v = v
         CQObjs.push(CQObj)
     })
     CQObjs.map(v => {
-        switch (v.CQType) {
+        switch (v.CQ) {
             case "image":
                 text = text.replace(v.v, `<br><img src="${v.url}" class="messageImg"><br>`)
                 break;
-
+            case "face":
+                console.log(v.id);
+                text = text.replace(v.v, `<img src="../faceImages/${v.id}.gif" class="face">`)
             default:
                 break;
         }
@@ -90,7 +110,7 @@ function fileObjParse(file) {
     return HTMLText
 }
 
-function createPrivateItem(data) {
+function createPrivateItem(data, to = null) {
     let { user_id, raw_message, time } = data
     // 创建根元素  
     var root = document.createElement('div');
